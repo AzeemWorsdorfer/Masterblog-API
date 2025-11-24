@@ -1,0 +1,166 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Masterblog API",
+    "version": "1.0.0",
+    "description": "A robust CRUD API for managing blog posts, featuring persistence, search, and sorting."
+  },
+  "host": "localhost:5002",
+  "basePath": "/api",
+  "schemes": ["http"],
+  "tags": [
+    {
+      "name": "Posts",
+      "description": "Blog Post Management - CRUD, Search, and Sort"
+    }
+  ],
+  "paths": {
+    "/posts": {
+      "get": {
+        "summary": "Retrieve all posts with optional sorting",
+        "produces": ["application/json"],
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Field to sort by ('title' or 'content')",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Sort direction ('asc' or 'desc')",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation, returns a list of posts."
+          },
+          "400": {
+            "description": "Invalid sort field or direction provided."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new post",
+        "produces": ["application/json"],
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "description": "Post object to be created",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["title", "content"],
+              "properties": {
+                "title": { "type": "string" },
+                "content": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Post created successfully."
+          },
+          "400": {
+            "description": "Missing title or content in request body."
+          }
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "put": {
+        "summary": "Update an existing post by ID",
+        "produces": ["application/json"],
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "ID of the post to update",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "post_data",
+            "in": "body",
+            "description": "Fields to update (title and/or content are optional)",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "content": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post updated successfully."
+          },
+          "404": {
+            "description": "Post not found."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a post by ID",
+        "produces": ["application/json"],
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "description": "ID of the post to delete",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post deleted successfully."
+          },
+          "404": {
+            "description": "Post not found."
+          }
+        }
+      }
+    },
+    "/posts/search": {
+      "get": {
+        "summary": "Search posts by title or content",
+        "produces": ["application/json"],
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Search term for the post title",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "Search term for the post content",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation, returns a list of matching posts."
+          }
+        }
+      }
+    }
+  }
+}
