@@ -71,6 +71,38 @@ def get_posts():
     return jsonify(POSTS)
 
 
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    """ Searches posts by title or content using query parameters. """
+
+    search_title = request.args.get('title')
+    search_content = request.args.get('content')
+
+    if not search_title and not search_content:
+        return jsonify(POSTS)
+
+    results = []
+
+    search_title_lower = search_title.lower() if search_title else None
+    search_content_lower = search_content.lower() if search_content else None
+
+    for post in POSTS:
+        title_matches = False
+        content_matches = False
+
+        if search_title_lower and search_title_lower in post.get('title', '').lower():
+            title_matches = True
+
+        if search_content_lower and search_content_lower in post.get('content', '').lower():
+            content_matches = True
+
+        if title_matches or content_matches:
+            results.append(post)
+
+    return jsonify(results)
+
+
+
 @app.route('/api/posts', methods=['POST'])
 def add_posts():
     """ Adds a blog post to the JSON list of posts."""
@@ -113,26 +145,25 @@ def update_post(post_id):
     """ Updates blog post from JSON. """
     global POSTS
     updated_data = request.get_json()
-    if not updated_data:
-        pass 
-        
+
     post_to_update = None
-    for post in POSTS: 
+    for post in POSTS:
         if post['id'] == post_id:
             post_to_update = post
             break
 
-    if post_to_update is None: 
+    if post_to_update is None:
         return jsonify({"error": f"Post with id {post_id} not found."}), 404
 
     if 'title' in updated_data:
         post_to_update['title'] = updated_data['title']
-    
+
     if 'content' in updated_data:
         post_to_update['content'] = updated_data['content']
-        
-    save_posts(POSTS) 
+
+    save_posts(POSTS)
     return jsonify(post_to_update), 200
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
