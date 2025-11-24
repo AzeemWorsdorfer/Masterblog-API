@@ -1,91 +1,230 @@
+/* Basic Reset and Typography */
 * {
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 20px 0;
-    height: 100vh;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 20px 0;
+  min-height: 100vh;
 }
 
+/* Container and Header */
 .container {
-    background-color: #fff;
-    width: 80%;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-    margin: auto;
+  background-color: #fff;
+  width: 90%;
+  max-width: 900px; /* Set a max width for better readability */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
 }
 
+h1 {
+  color: #222;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Input Fields and Buttons (General Styles) */
 .input-field {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px; /* Spacing between elements */
 }
 
 .input-field input,
-.input-field button {
-    height: 40px;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.5s ease;
+.input-field button,
+.input-field select,
+.edit-mode input,
+.edit-mode textarea {
+  height: 40px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd; /* Added border for contrast */
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
 }
 
 .input-field input {
-    flex-grow: 1;
-    margin-right: 10px;
-}
-
-.input-field input::placeholder {
-    color: #aaa;
+  flex-grow: 1;
 }
 
 .input-field button {
-    background-color: #4466ee;
-    color: #fff;
-    cursor: pointer;
+  background-color: #4466ee;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .input-field button:hover {
-    background-color: #3355dd;
+  background-color: #3355dd;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.input-field input:focus,
+.input-field select:focus {
+  border-color: #4466ee;
+  box-shadow: 0 0 0 2px rgba(68, 102, 238, 0.2);
+  outline: none;
+}
+
+/* Sorting Controls Specific Layout */
+.sorting-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  color: #555;
+  font-size: 14px;
+  gap: 15px;
+}
+
+.sorting-controls label {
+  font-weight: 500;
+}
+
+.sorting-controls select {
+  width: 150px;
+  height: 40px;
+  background-color: #f9f9f9;
+}
+
+/* Post Display Area */
+#post-container {
+  margin-top: 30px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
 }
 
 .post {
-    border-radius: 8px;
-    background-color: #f5f5f5;
-    margin-bottom: 20px;
-    padding: 20px;
-    position: relative;
+  background-color: #fafafa;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative; /* Essential for positioning absolute buttons */
 }
 
 .post h2 {
-    margin: 0;
-    color: #4466ee;
-    font-weight: 700;
+  color: #333;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .post p {
-    margin: 10px 0 0;
-    color: #333;
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.6;
 }
 
-.post button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ff4444;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+/* Post Actions (Delete/Edit Buttons) */
+.post-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
 }
 
-.post button:hover {
-    background-color: #cc0000;
+.delete-btn,
+.edit-btn {
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: auto; /* Override input-field button height */
+  box-shadow: none; /* Override input-field button shadow */
+}
+
+.delete-btn {
+  background-color: #ff4444;
+}
+
+.delete-btn:hover {
+  background-color: #dd3333;
+}
+
+.edit-btn {
+  background-color: #44ee44;
+}
+
+.edit-btn:hover {
+  background-color: #33dd33;
+}
+
+/* Edit Mode Styles */
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px dashed #4466ee;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.edit-mode input[type="text"] {
+  font-weight: bold;
+  font-size: 1.5em;
+  height: auto;
+  border: 1px solid #ccc;
+}
+
+.edit-mode textarea {
+  min-height: 100px;
+  resize: vertical;
+  padding: 10px;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.update-btn,
+.cancel-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: auto;
+  font-size: 16px;
+}
+
+.update-btn {
+  background-color: #4466ee;
+}
+
+.update-btn:hover {
+  background-color: #3355dd;
+}
+
+.cancel-btn {
+  background-color: #999;
+}
+
+.cancel-btn:hover {
+  background-color: #777;
+}
+
+/* No Results Message */
+.no-results {
+  text-align: center;
+  color: #888;
+  margin-top: 30px;
+  font-style: italic;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
 }

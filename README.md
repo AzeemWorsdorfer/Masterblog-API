@@ -1,30 +1,26 @@
-# 📚 Masterblog API and Frontend Application
+# 📚 Masterblog Full-Stack Application
 
-This project provides a complete full-stack solution for managing a blog, featuring a robust RESTful API built with Python (Flask) and a basic, dynamic frontend interface built with HTML, CSS, and JavaScript.
+This project implements a comprehensive full-stack solution for managing a blog. It consists of a robust **Python Flask API** for handling data logic and a dynamic **HTML/CSS/JavaScript** frontend for the user interface.
 
-The API supports full CRUD (Create, Read, Update, Delete) operations, persistent file storage, and advanced features like searching and sorting.
+## ✨ Key Features
 
-## 🌟 Features
+The application is fully functional and supports the following features:
 
-### Backend (Flask API)
-* **Full CRUD:** Endpoints for creating, reading, updating, and deleting blog posts.
-* **File Persistence:** Data is stored persistently in a local `posts.json` file.
-* **Unique ID Generation:** Automatically generates sequential, unique IDs for new posts, handling deletions gracefully.
-* **Searching:** Supports searching posts by title or content via the `/api/posts/search` endpoint.
-* **Sorting:** Supports sorting posts by `title` or `content` in ascending (`asc`) or descending (`desc`) order via the `/api/posts` endpoint.
-* **API Documentation (Swagger UI):** Automated, interactive documentation available at `/api/docs`.
+* **Full CRUD:** Complete functionality to **C**reate, **R**ead, **U**pdate, and **D**elete blog posts.
+* **Dynamic UI:** Posts can be edited inline and deleted dynamically without page refreshes.
+* **Search:** Allows filtering posts by keywords present in the **Title** or **Content**.
+* **Sort:** Supports sorting posts by **Title** or **Content** in either ascending (`asc`) or descending (`desc`) order.
+* **Data Persistence:** All blog post data is saved to and loaded from a local JSON file (`posts.json`).
+* **API Documentation (Swagger UI):** Interactive documentation automatically generated and available via a web interface.
 
-### Frontend
-* A single-page application (SPA) built with vanilla HTML, CSS, and JavaScript.
-* Allows users to load, add, delete, edit, and search posts without refreshing the page.
+---
 
 ## 🛠️ Setup and Installation
 
 ### Prerequisites
 
-* Python 3.x
-* `pip` (Python package installer)
+You must have Python 3.x and `pip` installed.
 
-### 1. Project Structure
-
-Ensure your project is organized with separate directories for the backend and frontend:
+Install the required Python packages:
+```bash
+pip install Flask Flask-CORS flask_swagger_ui
