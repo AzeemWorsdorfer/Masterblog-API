@@ -67,8 +67,33 @@ POSTS = load_posts()
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    """ Gets all blog posts in JSON Format."""
-    return jsonify(POSTS)
+    """ Gets all blog posts in JSON Format, with optional sorting."""
+
+    sort_field = request.args.get('sort')
+    direction = request.args.get('direction')
+
+    posts_to_return = list(POSTS)
+
+    VALID_SORT_FIELDS = ['title', 'content']
+    VALID_DIRECTIONS = ['asc', 'desc']
+
+    if sort_field:
+        
+        if sort_field not in VALID_SORT_FIELDS:
+            return jsonify({"error": f"Invalid sort field: {sort_field}. Must be one of {VALID_SORT_FIELDS}."}), 400
+
+        if direction not in VALID_DIRECTIONS:
+            return jsonify({"error": f"Invalid sort direction: {direction}. Must be one of {VALID_DIRECTIONS}."}), 400
+
+        reverse_sort = direction == 'desc'
+
+        try:
+            posts_to_return.sort(
+                key=lambda post: post[sort_field], reverse=reverse_sort)
+        except KeyError:
+            return jsonify({"error": f"Internal error: Post missing required field for sorting."}), 500
+
+    return jsonify(posts_to_return)
 
 
 @app.route('/api/posts/search', methods=['GET'])
@@ -100,7 +125,6 @@ def search_posts():
             results.append(post)
 
     return jsonify(results)
-
 
 
 @app.route('/api/posts', methods=['POST'])
