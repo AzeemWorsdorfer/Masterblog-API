@@ -1,0 +1,15 @@
+# Virtual Enviroment
+venv/
+.env
+.flaskenv
+
+# Byte-compiled / optimized / temporary files
+__pycache__/
+*.py[cod]
+
+# VSCode Configuration
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
