@@ -74,6 +74,7 @@ def get_posts():
 @app.route('/api/posts', methods=['POST'])
 def add_posts():
     """ Adds a blog post to the JSON list of posts."""
+    global POSTS
     new_post = request.get_json()
     if not new_post.get('title') or not new_post.get('content'):
         return jsonify({"Error": "Title and Content are required!"}), 400
@@ -90,6 +91,7 @@ def add_posts():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     """ Deletes a blog post from the JSON."""
+    global POSTS
     post_to_delete = None
     for index, post in enumerate(POSTS):
         if post['id'] == post_id:
@@ -109,7 +111,7 @@ def delete_post(post_id):
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     """ Updates blog post from JSON. """
-    
+    global POSTS
     updated_data = request.get_json()
     if not updated_data:
         pass 
