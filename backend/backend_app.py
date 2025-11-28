@@ -5,44 +5,44 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
+# --- CONFIGURATION ---
 app = Flask(__name__)
 CORS(app)
 
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 BLOG_POST_FILE = os.path.join(BASE_DIR, "posts.json")
+
+# --- DATA ACCESS HELPERS ---
 
 
 def load_posts():
     """
-    Loads blog posts from the JSON file.
-
-    Returns:
-        list: A list of blog post dictionaries. Returns an empty list on file error or absence.
+    Loads blog posts from the JSON file with UTF-8 encoding.
     """
+    # Check if file exists and is not empty
     if not os.path.exists(BLOG_POST_FILE) or os.path.getsize(BLOG_POST_FILE) == 0:
         return []
 
     try:
-        with open(BLOG_POST_FILE, "r") as f:
+        # Explicitly use encoding="utf8"
+        with open(BLOG_POST_FILE, "r", encoding="utf8") as f:
             return json.load(f)
     except json.JSONDecodeError:
         print(
             f"ERROR: Could not decode JSON from {BLOG_POST_FILE}. Check file format.")
         return []
+    except Exception as e:
+        print(f"ERROR: An unexpected error occurred while loading posts: {e}")
+        return []
 
 
 def save_posts(posts):
     """
-    Writes the current list of posts back to the JSON file.
-
-    Args:
-        posts (list): The list of blog post dictionaries to save.
+    Writes the current list of posts back to the JSON file with UTF-8 encoding.
     """
     try:
-        # Use json.dump to write directly to the file object
-        with open(BLOG_POST_FILE, "w") as f:
+
+        with open(BLOG_POST_FILE, "w", encoding="utf8") as f:
             json.dump(posts, f, indent=4)
         print(
             f"INFO: Successfully saved {len(posts)} posts to {BLOG_POST_FILE}.")
@@ -50,22 +50,20 @@ def save_posts(posts):
         print(f"ERROR: Failed to save posts to {BLOG_POST_FILE}: {e}")
 
 
-def get_next_id():
+def get_next_id(current_posts):
     """
     Generates the next sequential ID for a new blog post.
-    Finds the highest existing ID in the global POSTS list and adds 1.
+    Accepts the current list of posts instead of using a global.
     """
-    if not POSTS:
+    if not current_posts:
         return 1
 
-    max_id = max(post.get('id', 0) for post in POSTS)
+    # Use current_posts instead of a global POSTS
+    max_id = max(post.get('id', 0) for post in current_posts)
     return max_id + 1
 
 
-# Load all posts into a global variable POSTS at startup.
-POSTS = load_posts()
-
-# --- SWAGGER CONFIGURATION ---
+# --- SWAGGER CONFIGURATION (No change needed here) ---
 SWAGGER_URL = "/api/docs"
 API_URL = "/static/masterblog.json"
 
@@ -78,15 +76,19 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
+# --- API ROUTES ---
+
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     """ Gets all blog posts in JSON Format, with optional sorting."""
 
+    posts_data = load_posts()
+
     sort_field = request.args.get('sort')
     direction = request.args.get('direction')
 
-    posts_to_return = list(POSTS)
+    posts_to_return = list(posts_data)
 
     VALID_SORT_FIELDS = ['title', 'content']
     VALID_DIRECTIONS = ['asc', 'desc']
@@ -114,18 +116,20 @@ def get_posts():
 def search_posts():
     """ Searches posts by title or content using query parameters. """
 
+    posts_data = load_posts()
+
     search_title = request.args.get('title')
     search_content = request.args.get('content')
 
     if not search_title and not search_content:
-        return jsonify(POSTS)
+        return jsonify(posts_data)  # Return all if no search params
 
     results = []
 
     search_title_lower = search_title.lower() if search_title else None
     search_content_lower = search_content.lower() if search_content else None
 
-    for post in POSTS:
+    for post in posts_data:
         title_matches = False
         content_matches = False
 
@@ -144,16 +148,20 @@ def search_posts():
 @app.route('/api/posts', methods=['POST'])
 def add_posts():
     """ Adds a blog post to the JSON list of posts."""
-    global POSTS
+
+    posts_data = load_posts()
+
     new_post = request.get_json()
-    if not new_post.get('title') or not new_post.get('content'):
+    if not new_post or not new_post.get('title') or not new_post.get('content'):
         return jsonify({"Error": "Title and Content are required!"}), 400
 
-    new_post['id'] = get_next_id()
+    # Pass posts_data to get_next_id
+    new_post['id'] = get_next_id(posts_data)
 
-    POSTS.append(new_post)
+    posts_data.append(new_post)
 
-    save_posts(POSTS)
+    # Pass updated posts_data to save_posts
+    save_posts(posts_data)
 
     return jsonify(new_post), 201
 
@@ -161,17 +169,20 @@ def add_posts():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     """ Deletes a blog post from the JSON."""
-    global POSTS
-    post_to_delete = None
-    for index, post in enumerate(POSTS):
+
+    posts_data = load_posts()
+
+    post_index_to_delete = None
+    for index, post in enumerate(posts_data):
         if post['id'] == post_id:
-            post_to_delete = index
+            post_index_to_delete = index
             break
 
-    if post_to_delete is not None:
-        del POSTS[post_to_delete]
+    if post_index_to_delete is not None:
+        del posts_data[post_index_to_delete]
 
-        save_posts(POSTS)
+        # Pass updated posts_data to save_posts
+        save_posts(posts_data)
 
         return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 200
     else:
@@ -181,11 +192,13 @@ def delete_post(post_id):
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     """ Updates blog post from JSON. """
-    global POSTS
+
+    posts_data = load_posts()
+
     updated_data = request.get_json()
 
     post_to_update = None
-    for post in POSTS:
+    for post in posts_data:
         if post['id'] == post_id:
             post_to_update = post
             break
@@ -198,8 +211,7 @@ def update_post(post_id):
 
     if 'content' in updated_data:
         post_to_update['content'] = updated_data['content']
-
-    save_posts(POSTS)
+save_posts(posts_data)
     return jsonify(post_to_update), 200
 
 
