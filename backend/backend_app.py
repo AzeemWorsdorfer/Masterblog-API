@@ -24,7 +24,6 @@ def load_posts():
         return []
 
     try:
-        # Explicitly use encoding="utf8"
         with open(BLOG_POST_FILE, "r", encoding="utf8") as f:
             return json.load(f)
     except json.JSONDecodeError:
